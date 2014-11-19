@@ -13,6 +13,6 @@ setup(
 			'include_files': ['etc/faddnsc.conf', ]
 		},
 	},
-	scripts = ['faddnsc', 'faddnsd'],
+	scripts = ['faddnsc', ],
 	packages = find_packages(),
 )
