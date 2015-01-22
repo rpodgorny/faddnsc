@@ -170,17 +170,18 @@ def send_addrs(url, host, version, addrs):
 
 	try:
 		u = urllib.request.urlopen(url).read().decode('utf-8')
-
-		if 'OK' in ''.join(u):
-			logging.debug('OK')
-			return True
-		else:
-			logging.warning('got NOT OK')
-			for i in u: logging.warning(i.strip())
-		#endif
-	except urllib.error.URLError:
-		logging.exception('urllib.request.urlopen() exception, probably failed to connect')
+	except urllib.error.URLError as e:
+		#logging.exception('urllib.request.urlopen() exception, probably failed to connect')
+		logging.error('failed with: %s' % str(e))
+		return False
 	#endtry
+
+	if 'OK' in ''.join(u):
+		logging.debug('OK')
+		return True
+	else:
+		logging.warning('did not get OK, server returned: %s' % u)
+	#endif
 
 	return False
 #enddef
