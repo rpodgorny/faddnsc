@@ -103,4 +103,7 @@ def main():
 	logging.info('exit')
 #enddef
 
-if __name__ == '__main__': main()
+
+if __name__ == '__main__':
+	main()
+#endif
