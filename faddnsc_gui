@@ -4,7 +4,7 @@
 Freakin' Awesome Dynamic DNS client - GUI version.
 
 Usage:
-  faddnsc [options] [-u, --url-prefix=<url-prefix>]...
+  faddnsc [options]
 
 Options:
   -h, --help      Help.
@@ -14,8 +14,8 @@ Options:
   --host=<host>   Hostname to report.
   -i, --interval=<interval>
                   Update interval (s).
-  -u, --url-prefix=<url-prefix>
-                  URL prefix.
+  -u, --url=<url>
+                  URL of FADDNS server.
   --no-tray       Disable tray icon.
 '''
 
@@ -104,7 +104,7 @@ def main():
 
 	if args['--host']: cfg.host = args['--host']
 	if args['--interval']: cfg.interval = float(args['--interval'])
-	if args['--url-prefix']: cfg.url_prefix = args['--url-prefix']
+	if args['--url']: cfg.url = args['--url']
 
 	err = cfg.check()
 	if err:

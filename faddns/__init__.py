@@ -145,7 +145,7 @@ def get_addrs_linux():
 #enddef
 
 
-def send_addrs(url_prefix, host, version, addrs):
+def send_addrs(url, host, version, addrs):
 	# TODO: for the next version?
 	#recs = []
 	#for i in addrs:
@@ -156,7 +156,7 @@ def send_addrs(url_prefix, host, version, addrs):
 	#endfor
 	#logging.debug('recs = %s' % recs)
 
-	logging.debug('sending info to %s' % url_prefix)
+	logging.debug('sending info to %s' % url)
 
 	d = {
 		'version': version,
@@ -164,7 +164,7 @@ def send_addrs(url_prefix, host, version, addrs):
 		#'records': recs
 	}
 	d.update(addrs)
-	url = '%s?%s' % (url_prefix, urllib.parse.urlencode(d, True))
+	url = '%s?%s' % (url, urllib.parse.urlencode(d, True))
 
 	logging.debug(url)
 
