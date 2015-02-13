@@ -62,7 +62,7 @@ def get_addrs_windows():
 			word = word.strip().lower()
 
 			if not ':' in word: continue
-			if not word.startswith('200'): continue
+			###if not word.startswith('200'): continue
 
 			if not 'inet6' in ret: ret['inet6'] = set()
 			ret['inet6'].add(word)
@@ -70,18 +70,16 @@ def get_addrs_windows():
 	#endfor
 
 	# disable ether for now
-	'''
 	lines = call('ipconfig /all')
 	for word in lines.split():
 		word = word.strip().lower()
-		if not re.match('..-..-..-..-..-..', word): continue
+		###if not re.match('..-..-..-..-..-..', word): continue
 
 		word = word.replace('-', ':')
 
 		if not 'ether' in ret: ret['ether'] = set()
 		ret['ether'].add(word)
 	#endfor
-	'''
 
 	return ret
 #enddef
@@ -120,6 +118,7 @@ def get_addrs_linux():
 			addr = addr.split('/')[0]
 		except: pass
 
+		'''
 		if addr_type == 'ether':
 			if addr == '00:00:00:00:00:00': continue
 		elif addr_type == 'inet':
@@ -131,15 +130,18 @@ def get_addrs_linux():
 			if ipaddress.ip_address(addr).is_loopback: continue
 			if ipaddress.ip_address(addr).is_link_local: continue
 		#endif
+		'''
 
 		if not addr_type in ret: ret[addr_type] = set()
 		ret[addr_type].add(addr)
 	#endfor
 
+	'''
 	# disable ether for now
 	if 'ether' in ret:
 		del ret['ether']
 	#endif
+	'''
 
 	return ret
 #enddef
