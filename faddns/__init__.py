@@ -49,7 +49,7 @@ def call(cmd):
 
 
 def get_addrs_windows():
-	ret = {} 
+	ret = {}
 
 	# TODO: get ipv4 addresses
 
@@ -86,7 +86,7 @@ def get_addrs_windows():
 
 
 def get_addrs_linux():
-	ret = {} 
+	ret = {}
 
 	lines = call('ip addr').split('\n')
 
