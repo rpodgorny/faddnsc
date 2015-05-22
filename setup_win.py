@@ -9,9 +9,9 @@ base = 'Win32GUI'
 executables = [
 	Executable(
 		script='faddnsc',
-		appendScriptToExe=True,
-		appendScriptToLibrary=False,
-		compress=True,
+		#appendScriptToExe=True,
+		#appendScriptToLibrary=False,
+		#compress=True,
 	),
 	#Executable(
 	#	script='faddnsc_gui',
@@ -28,8 +28,8 @@ setup(
 	options = {
 		'build_exe': {
 			'includes': ['re', ],
-			'create_shared_zip': False,
-			'compressed': True,
+			#'create_shared_zip': False,
+			#'compressed': True,
 			'include_msvcr': True,
 		},
 	},
