@@ -60,6 +60,6 @@ cd ..
 
 rd /s /q pkg
 
-pscp %pkg_fn% radek@podgorny.cz:public_html/atxpkg/
+pscp %pkg_fn% %upload%
 
 :end
