@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import sys
 import urllib
 import urllib.request
 import urllib.error
@@ -9,6 +10,11 @@ import logging
 import subprocess
 import re
 import time
+
+# TODO: get rid of this dependency
+if sys.platform == 'win32':
+	import netifaces
+#endif
 
 
 def logging_setup(level, fn=None):
@@ -51,7 +57,18 @@ def call(cmd):
 def get_addrs_windows():
 	ret = {}
 
-	# TODO: get ipv4 addresses
+	# TODO: this is the only way i know to list ipv4 addresses :-(
+	for interface in netifaces.interfaces():
+		addrs = netifaces.ifaddresses(interface)
+		for addr in addrs:
+			if not netifaces.AF_INET in addrs: continue
+			for addr in addrs[netifaces.AF_INET]:
+				a = addr['addr']
+				if not 'inet' in ret: ret['inet'] = set()
+				ret['inet'].add(a)
+			#endfor
+		#endfor
+	#endfor
 
 	lines = call('netsh interface ipv6 show address')
 
@@ -61,7 +78,14 @@ def get_addrs_windows():
 		for word in line.split():
 			word = word.strip().lower()
 
-			if not ':' in word: continue
+			# TODO: hackish but works
+			try:
+				a = ipaddress.IPv6Address(word)
+			except:
+				continue
+			#endtry
+
+			###if not ':' in word: continue
 			###if not word.startswith('200'): continue
 
 			if not 'inet6' in ret: ret['inet6'] = set()
@@ -70,6 +94,7 @@ def get_addrs_windows():
 	#endfor
 
 	# disable ether for now
+	'''
 	lines = call('ipconfig /all')
 	for word in lines.split():
 		word = word.strip().lower()
@@ -79,6 +104,21 @@ def get_addrs_windows():
 
 		if not 'ether' in ret: ret['ether'] = set()
 		ret['ether'].add(word)
+	#endfor
+	'''
+
+	# TODO: this is the only way i know to list ethernet addresses :-(
+	for interface in netifaces.interfaces():
+		addrs = netifaces.ifaddresses(interface)
+		for addr in addrs:
+			if not -1000 in addrs: continue
+			for addr in addrs[-1000]:
+				a = addr['addr']
+				if not a: continue
+				if not 'ether' in ret: ret['ether'] = set()
+				ret['ether'].add(a)
+			#endfor
+		#endfor
 	#endfor
 
 	return ret
