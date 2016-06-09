@@ -56,18 +56,14 @@ class MyTray(QSystemTrayIcon):
 		self.setContextMenu(menu)
 
 		self.show()
-	#enddef
 
 	def on_refresh(self):
 		logging.info('forced refresh')
 
 		self.ml.refresh()
-	#enddef
 
 	def on_exit(self):
 		self.app.quit()
-	#enddef
-#endclass
 
 
 def main():
@@ -84,33 +80,32 @@ def main():
 	cfg_fn = args['-c']
 	if not cfg_fn:
 		for fn in (os.path.expanduser('~/.faddnsc.conf'), 'faddnsc.ini', '/etc/faddnsc.conf'):
-			if not os.path.isfile(fn): continue
+			if not os.path.isfile(fn):
+				continue
 			cfg_fn = fn
 			break
-		#endfor
-	#endif
 
 	if cfg_fn and not os.path.isfile(cfg_fn):
 		logging.critical('%s does not exist, exitting')
 		return
-	#endif
 
 	if cfg_fn:
 		logging.info('reading configuration from %s' % cfg_fn)
 		cfg.read_from_ini(cfg_fn)
 	else:
 		logging.info('no configuration file specified nor found')
-	#endif
 
-	if args['--host']: cfg.host = args['--host']
-	if args['--interval']: cfg.interval = float(args['--interval'])
-	if args['--url']: cfg.url = args['--url']
+	if args['--host']:
+		cfg.host = args['--host']
+	if args['--interval']:
+		cfg.interval = float(args['--interval'])
+	if args['--url']:
+		cfg.url = args['--url']
 
 	err = cfg.check()
 	if err:
 		logging.critical(err)
 		return
-	#endif
 
 	logging.info('%s' % cfg)
 
@@ -124,7 +119,6 @@ def main():
 	else:
 		logging.critical('unknown platform! (%s)' % sys.platform)
 		return
-	#endif
 
 	ml = MainLoop(get_addrs_f, cfg.host, cfg.url, __version__, cfg.interval)
 	thr = threading.Thread(target=ml.run)
@@ -134,7 +128,6 @@ def main():
 
 	if not args['--no-tray']:
 		tray = MyTray(app, ml)
-	#endif
 
 	app.exec_()
 
@@ -142,9 +135,7 @@ def main():
 	thr.join()
 
 	logging.info('exit')
-#enddef
 
 
 if __name__ == '__main__':
 	main()
-#endif

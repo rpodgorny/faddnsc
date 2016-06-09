@@ -14,7 +14,6 @@ import time
 # TODO: get rid of this dependency
 if sys.platform == 'win32':
 	import netifaces
-#endif
 
 
 def logging_setup(level, fn=None):
@@ -33,8 +32,6 @@ def logging_setup(level, fn=None):
 		fh.setLevel(level)
 		fh.setFormatter(formatter)
 		logger.addHandler(fh)
-	#endif
-#enddef
 
 
 def call_OLD(cmd):
@@ -45,13 +42,11 @@ def call_OLD(cmd):
 	ret = f.read()
 	f.close()
 	return ret
-#enddef
 
 
 def call(cmd):
 	logging.debug('calling: %s' % cmd)
 	return subprocess.check_output(cmd, shell=True).decode('cp1250')
-#enddef
 
 
 def get_addrs_windows():
@@ -64,11 +59,9 @@ def get_addrs_windows():
 			if not netifaces.AF_INET in addrs: continue
 			for addr in addrs[netifaces.AF_INET]:
 				a = addr['addr']
-				if not 'inet' in ret: ret['inet'] = set()
+				if not 'inet' in ret:
+					ret['inet'] = set()
 				ret['inet'].add(a)
-			#endfor
-		#endfor
-	#endfor
 
 	lines = call('netsh interface ipv6 show address')
 
@@ -83,15 +76,12 @@ def get_addrs_windows():
 				a = ipaddress.IPv6Address(word)
 			except:
 				continue
-			#endtry
 
 			###if not ':' in word: continue
 			###if not word.startswith('200'): continue
 
 			if not 'inet6' in ret: ret['inet6'] = set()
 			ret['inet6'].add(word)
-		#endfor
-	#endfor
 
 	# disable ether for now
 	'''
@@ -104,7 +94,6 @@ def get_addrs_windows():
 
 		if not 'ether' in ret: ret['ether'] = set()
 		ret['ether'].add(word)
-	#endfor
 	'''
 
 	# TODO: this is the only way i know to list ethernet addresses :-(
@@ -117,12 +106,8 @@ def get_addrs_windows():
 				if not a: continue
 				if not 'ether' in ret: ret['ether'] = set()
 				ret['ether'].add(a)
-			#endfor
-		#endfor
-	#endfor
 
 	return ret
-#enddef
 
 
 def get_addrs_linux():
@@ -136,7 +121,6 @@ def get_addrs_linux():
 		if not 'ether' in line \
 		and not 'inet' in line:
 			continue
-		#endif
 
 		if 'temporary' in line: continue
 
@@ -152,7 +136,6 @@ def get_addrs_linux():
 			addr_type = 'inet'
 		else:
 			logging.error('unknown address type! (%s)' % addr_type)
-		#endif
 
 		try:
 			addr = addr.split('/')[0]
@@ -169,22 +152,19 @@ def get_addrs_linux():
 			if ipaddress.ip_address(addr).is_private: continue
 			if ipaddress.ip_address(addr).is_loopback: continue
 			if ipaddress.ip_address(addr).is_link_local: continue
-		#endif
 		'''
 
-		if not addr_type in ret: ret[addr_type] = set()
+		if not addr_type in ret:
+			ret[addr_type] = set()
 		ret[addr_type].add(addr)
-	#endfor
 
 	'''
 	# disable ether for now
 	if 'ether' in ret:
 		del ret['ether']
-	#endif
 	'''
 
 	return ret
-#enddef
 
 
 def send_addrs(url, host, version, addrs):
@@ -195,7 +175,6 @@ def send_addrs(url, host, version, addrs):
 	#	for k,v in i.items(): r.append('%s=%s' % (k, v))
 	#	r = ','.join(r)
 	#	recs.append(r)
-	#endfor
 	#logging.debug('recs = %s' % recs)
 
 	logging.debug('sending info to %s' % url)
@@ -216,17 +195,14 @@ def send_addrs(url, host, version, addrs):
 		#logging.exception('urllib.request.urlopen() exception, probably failed to connect')
 		logging.error('failed with: %s' % str(e))
 		return False
-	#endtry
 
 	if 'OK' in ''.join(u):
 		logging.debug('OK')
 		return True
 	else:
 		logging.warning('did not get OK, server returned: %s' % u)
-	#endif
 
 	return False
-#enddef
 
 
 class MainLoop:
@@ -239,7 +215,6 @@ class MainLoop:
 
 		self._run = False
 		self._refresh = False
-	#enddef
 
 	def run(self):
 		logging.debug('main loop')
@@ -262,7 +237,6 @@ class MainLoop:
 				else:
 					logging.debug('some addresses, setting interval to %s' % self.interval)
 					interval = self.interval
-				#endif
 
 				# disable this for now since we also want to use this as 'i am alive' signal
 				#if self._refresh or addrs != addrs_old:
@@ -272,26 +246,18 @@ class MainLoop:
 						addrs_old = addrs
 					else:
 						logging.warning('send_addrs failed')
-					#endif
 				else:
 					logging.debug('no change, doing nothing')
-				#endif
 
 				self._refresh = False
 				t_last = t
 			else:
 				time.sleep(0.1)
-			#endif
-		#endwhile
 
 		logging.debug('exited main loop')
-	#enddef
 
 	def stop(self):
 		self._run = False
-	#enddef
 
 	def refresh(self):
 		self._refresh = True
-	#enddef
-#endclass

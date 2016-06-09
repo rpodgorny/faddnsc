@@ -39,7 +39,6 @@ def main():
 		log_fn = 'faddnsc.log'
 	else:
 		log_fn = None
-	#endif
 
 	faddns.logging_setup(log_level, log_fn)
 
@@ -54,30 +53,28 @@ def main():
 			if not os.path.isfile(fn): continue
 			cfg_fn = fn
 			break
-		#endfor
-	#endif
 
 	if cfg_fn and not os.path.isfile(cfg_fn):
 		logging.critical('%s does not exist, exitting' % cfg_fn)
 		return
-	#endif
 
 	if cfg_fn:
 		logging.info('reading configuration from %s' % cfg_fn)
 		cfg.read_from_ini(cfg_fn)
 	else:
 		logging.info('no configuration file specified nor found')
-	#endif
 
-	if args['--host']: cfg.host = args['--host']
-	if args['--interval']: cfg.interval = float(args['--interval'])
-	if args['--url']: cfg.url = args['--url']
+	if args['--host']:
+		cfg.host = args['--host']
+	if args['--interval']:
+		cfg.interval = float(args['--interval'])
+	if args['--url']:
+		cfg.url = args['--url']
 
 	err = cfg.check()
 	if err:
 		logging.critical(err)
 		return
-	#endif
 
 	logging.info('%s' % cfg)
 
@@ -90,7 +87,6 @@ def main():
 	else:
 		logging.critical('unknown platform! (%s)' % sys.platform)
 		return
-	#endif
 
 	ml = faddns.MainLoop(get_addrs_f, cfg.host, cfg.url, __version__, cfg.interval)
 
@@ -98,12 +94,9 @@ def main():
 		ml.run()
 	except KeyboardInterrupt:
 		logging.debug('keyboard interrupt!')
-	#endtry
 
 	logging.info('exit')
-#enddef
 
 
 if __name__ == '__main__':
 	main()
-#endif
