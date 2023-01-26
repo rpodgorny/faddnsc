@@ -50,7 +50,8 @@ def main():
 	cfg_fn = args['-c']
 	if not cfg_fn:
 		for fn in (os.path.expanduser('~/.faddnsc.conf'), 'faddnsc.ini', '/etc/faddnsc.conf'):
-			if not os.path.isfile(fn): continue
+			if not os.path.isfile(fn):
+				continue
 			cfg_fn = fn
 			break
 
