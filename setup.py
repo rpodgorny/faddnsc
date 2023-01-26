@@ -11,6 +11,7 @@ setup(
 			'include_files': ['etc/faddnsc.conf', ]
 		},
 	},
+	install_requires=["docopt"],
 	scripts = ['faddnsc', ],
 	packages = find_packages(),
 )
