@@ -8,7 +8,6 @@ import urllib.parse
 import ipaddress
 import logging
 import subprocess
-import re
 import time
 
 # TODO: get rid of this dependency
@@ -56,17 +55,19 @@ def get_addrs_windows():
 	for interface in netifaces.interfaces():
 		addrs = netifaces.ifaddresses(interface)
 		for addr in addrs:
-			if not netifaces.AF_INET in addrs: continue
+			if netifaces.AF_INET not in addrs:
+				continue
 			for addr in addrs[netifaces.AF_INET]:
 				a = addr['addr']
-				if not 'inet' in ret:
+				if 'inet' not in ret:
 					ret['inet'] = set()
 				ret['inet'].add(a)
 
 	lines = call('netsh interface ipv6 show address')
 
 	for line in lines.split('\n'):
-		if 'Temporary' in line: continue
+		if 'Temporary' in line:
+			continue
 
 		for word in line.split():
 			word = word.strip().lower()
@@ -80,7 +81,8 @@ def get_addrs_windows():
 			###if not ':' in word: continue
 			###if not word.startswith('200'): continue
 
-			if not 'inet6' in ret: ret['inet6'] = set()
+			if 'inet6' not in ret:
+				ret['inet6'] = set()
 			ret['inet6'].add(word)
 
 	# disable ether for now
@@ -100,11 +102,14 @@ def get_addrs_windows():
 	for interface in netifaces.interfaces():
 		addrs = netifaces.ifaddresses(interface)
 		for addr in addrs:
-			if not -1000 in addrs: continue
+			if -1000 not in addrs:
+				continue
 			for addr in addrs[-1000]:
 				a = addr['addr']
-				if not a: continue
-				if not 'ether' in ret: ret['ether'] = set()
+				if not a:
+					continue
+				if 'ether' not in ret:
+					ret['ether'] = set()
 				ret['ether'].add(a)
 
 	return ret
@@ -118,11 +123,12 @@ def get_addrs_linux():
 	for line in lines:
 		line = line.strip()
 
-		if not 'ether' in line \
-		and not 'inet' in line:
+		if 'ether' not in line \
+		and 'inet' not in line:
 			continue
 
-		if 'temporary' in line: continue
+		if 'temporary' in line:
+			continue
 
 		addr_type, addr, _ = line.split(' ', 2)
 		addr_type = addr_type.lower()
@@ -139,7 +145,8 @@ def get_addrs_linux():
 
 		try:
 			addr = addr.split('/')[0]
-		except: pass
+		except:
+			pass
 
 		'''
 		if addr_type == 'ether':
@@ -154,7 +161,7 @@ def get_addrs_linux():
 			if ipaddress.ip_address(addr).is_link_local: continue
 		'''
 
-		if not addr_type in ret:
+		if addr_type not in ret:
 			ret[addr_type] = set()
 		ret[addr_type].add(addr)
 
@@ -219,7 +226,7 @@ class MainLoop:
 	def run(self):
 		logging.debug('main loop')
 
-		addrs_old = None
+		#addrs_old = None
 
 		interval = 60  # TODO: hard-coded shit
 		t_last = 0
@@ -242,8 +249,10 @@ class MainLoop:
 				#if self._refresh or addrs != addrs_old:
 				if 1:
 					logging.info('sending info to %s (%s)' % (self.url, addrs))
-					if send_addrs(self.url, self.host, self.version, addrs):
-						addrs_old = addrs
+					res = send_addrs(self.url, self.host, self.version, addrs)
+					if res:
+						#addrs_old = addrs
+						pass
 					else:
 						logging.warning('send_addrs failed')
 				else:
