@@ -1,6 +1,7 @@
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 from faddns.version import __version__
+
 
 setup(
     name="faddns",

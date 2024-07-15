@@ -24,7 +24,7 @@ class Config:
     def __str__(self):
         lst = []
         for k, v in vars(self).items():
-            lst.append("%s='%s'" % (k, v))
+            lst.append(f"{k}='{v}'")
         return ", ".join(lst)
 
 

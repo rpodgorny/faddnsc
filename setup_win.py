@@ -1,6 +1,7 @@
-from cx_Freeze import setup, Executable
+from cx_Freeze import Executable, setup
 
 from faddns.version import __version__
+
 
 base = "Win32GUI"
 

@@ -1,12 +1,13 @@
-import sys
-import urllib
-import urllib.request
-import urllib.error
-import urllib.parse
 import ipaddress
 import logging
 import subprocess
+import sys
 import time
+import urllib
+import urllib.error
+import urllib.parse
+import urllib.request
+
 
 # TODO: get rid of this dependency
 if sys.platform == "win32":
@@ -32,7 +33,7 @@ def logging_setup(level, fn=None):
 
 
 def call_OLD(cmd):
-    logging.debug("calling: %s" % cmd)
+    logging.debug(f"calling: {cmd}")
 
     import os
 
@@ -43,7 +44,7 @@ def call_OLD(cmd):
 
 
 def call(cmd):
-    logging.debug("calling: %s" % cmd)
+    logging.debug(f"calling: {cmd}")
     return subprocess.check_output(cmd, shell=True).decode("cp1250")
 
 
@@ -139,50 +140,22 @@ def get_addrs_linux():
         elif "inet" in addr_type:
             addr_type = "inet"
         else:
-            logging.error("unknown address type! (%s)" % addr_type)
+            logging.error(f"unknown address type! ({addr_type})")
 
         try:
             addr = addr.split("/")[0]
-        except:
+        except Exception:
             pass
-
-        """
-		if addr_type == 'ether':
-			if addr == '00:00:00:00:00:00': continue
-		elif addr_type == 'inet':
-			if ipaddress.ip_address(addr).is_private: continue
-			if ipaddress.ip_address(addr).is_loopback: continue
-			if ipaddress.ip_address(addr).is_link_local: continue
-		elif addr_type == 'inet6':
-			if ipaddress.ip_address(addr).is_private: continue
-			if ipaddress.ip_address(addr).is_loopback: continue
-			if ipaddress.ip_address(addr).is_link_local: continue
-		"""
 
         if addr_type not in ret:
             ret[addr_type] = set()
         ret[addr_type].add(addr)
 
-    """
-	# disable ether for now
-	if 'ether' in ret:
-		del ret['ether']
-	"""
-
     return ret
 
 
 def send_addrs(url, host, version, addrs):
-    # TODO: for the next version?
-    # recs = []
-    # for i in addrs:
-    # 	r = []
-    # 	for k,v in i.items(): r.append('%s=%s' % (k, v))
-    # 	r = ','.join(r)
-    # 	recs.append(r)
-    # logging.debug('recs = %s' % recs)
-
-    logging.debug("sending info to %s" % url)
+    logging.debug(f"sending info to {url}")
 
     d = {
         "version": version,
@@ -190,7 +163,8 @@ def send_addrs(url, host, version, addrs):
         #'records': recs
     }
     d.update(addrs)
-    url = "%s?%s" % (url, urllib.parse.urlencode(d, True))
+    url_params = urllib.parse.urlencode(d, True)
+    url = f"{url}?{url_params}"
 
     logging.debug(url)
 
@@ -198,14 +172,14 @@ def send_addrs(url, host, version, addrs):
         u = urllib.request.urlopen(url).read().decode("utf-8")
     except urllib.error.URLError as e:
         # logging.exception('urllib.request.urlopen() exception, probably failed to connect')
-        logging.error("failed with: %s" % str(e))
+        logging.error(f"failed with: {str(e)}")
         return False
 
     if "OK" in "".join(u):
         logging.debug("OK")
         return True
     else:
-        logging.warning("did not get OK, server returned: %s" % u)
+        logging.warning(f"did not get OK, server returned: {u}")
 
     return False
 
@@ -240,13 +214,13 @@ class MainLoop:
                     logging.debug("no addresses, setting interval to 60")
                     interval = 60  # TODO: hard-coded shit
                 else:
-                    logging.debug("some addresses, setting interval to %s" % self.interval)
+                    logging.debug(f"some addresses, setting interval to {self.interval}")
                     interval = self.interval
 
                 # disable this for now since we also want to use this as 'i am alive' signal
                 # if self._refresh or addrs != addrs_old:
                 if 1:
-                    logging.info("sending info to %s (%s)" % (self.url, addrs))
+                    logging.info(f"sending info to {self.url} ({addrs})")
                     res = send_addrs(self.url, self.host, self.version, addrs)
                     if res:
                         # addrs_old = addrs

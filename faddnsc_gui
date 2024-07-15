@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 
+# TODO: this looks unfinished
+
 """
 Freakin' Awesome Dynamic DNS client - GUI version.
 
@@ -19,17 +21,17 @@ Options:
   --no-tray       Disable tray icon.
 """
 
-from version import __version__
-
+import logging
 import os
 import sys
+import threading
+
+import docopt
+from cfg import cfg
 from PySide.QtCore import *
 from PySide.QtGui import *
-import threading
-from cfg import cfg
-import docopt
+from version import __version__
 
-import logging
 
 sys.excepthook = lambda t, v, tb: logging.critical("unhandled exception", exc_info=(t, v, tb))
 
@@ -49,7 +51,7 @@ class MyTray(QSystemTrayIcon):
 
         self.addrs_old = None
 
-        self.setToolTip("faddnsc_gui v%s" % __version__)
+        self.setToolTip(f"faddnsc_gui v{__version__}")
 
         menu = QMenu()
         menu.addAction("Force refresh", self.on_refresh)
@@ -74,7 +76,7 @@ def main():
     logging_setup(log_level, "faddnsc_gui.log")
 
     logging.info("*" * 40)
-    logging.info("starting faddnsc_gui v%s" % __version__)
+    logging.info(f"starting faddnsc_gui v{__version__}")
 
     logging.debug(str(args))
 
@@ -87,11 +89,11 @@ def main():
             break
 
     if cfg_fn and not os.path.isfile(cfg_fn):
-        logging.critical("%s does not exist, exiting")
+        logging.critical(f"{cfg_fn} does not exist, exiting")
         return
 
     if cfg_fn:
-        logging.info("reading configuration from %s" % cfg_fn)
+        logging.info(f"reading configuration from {cfg_fn}")
         cfg.read_from_ini(cfg_fn)
     else:
         logging.info("no configuration file specified nor found")
@@ -108,7 +110,7 @@ def main():
         logging.critical(err)
         return
 
-    logging.info("%s" % cfg)
+    logging.info(f"{cfg}")
 
     global get_addrs
     if sys.platform == "win32":
@@ -118,7 +120,7 @@ def main():
         logging.info("detected linux")
         get_addrs_f = get_addrs_linux
     else:
-        logging.critical("unknown platform! (%s)" % sys.platform)
+        logging.critical(f"unknown platform! ({sys.platform})")
         return
 
     ml = MainLoop(get_addrs_f, cfg.host, cfg.url, __version__, cfg.interval)

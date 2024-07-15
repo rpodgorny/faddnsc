@@ -18,15 +18,16 @@ Options:
                   URL of FADDNS server.
 """
 
-from faddns.version import __version__
-
+import logging
 import os
 import sys
+
 import docopt
+
 import faddns
 from faddns.cfg import cfg
+from faddns.version import __version__
 
-import logging
 
 sys.excepthook = lambda t, v, tb: logging.critical("unhandled exception", exc_info=(t, v, tb))
 
@@ -44,7 +45,7 @@ def main():
     faddns.logging_setup(log_level, log_fn)
 
     logging.info("*" * 40)
-    logging.info("starting faddnsc v%s" % __version__)
+    logging.info(f"starting faddnsc v{__version__}")
 
     logging.debug(str(args))
 
@@ -57,11 +58,11 @@ def main():
             break
 
     if cfg_fn and not os.path.isfile(cfg_fn):
-        logging.critical("%s does not exist, exiting" % cfg_fn)
+        logging.critical(f"{cfg_fn} does not exist, exiting")
         return
 
     if cfg_fn:
-        logging.info("reading configuration from %s" % cfg_fn)
+        logging.info(f"reading configuration from {cfg_fn}")
         cfg.read_from_ini(cfg_fn)
     else:
         logging.info("no configuration file specified nor found")
@@ -78,7 +79,7 @@ def main():
         logging.critical(err)
         return
 
-    logging.info("%s" % cfg)
+    logging.info(f"{cfg}")
 
     if sys.platform == "win32":
         logging.info("detected win32")
@@ -87,7 +88,7 @@ def main():
         logging.info("detected linux")
         get_addrs_f = faddns.get_addrs_linux
     else:
-        logging.critical("unknown platform! (%s)" % sys.platform)
+        logging.critical(f"unknown platform! ({sys.platform})")
         return
 
     ml = faddns.MainLoop(get_addrs_f, cfg.host, cfg.url, __version__, cfg.interval)
