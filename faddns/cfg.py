@@ -22,10 +22,10 @@ class Config:
 
     # TODO: move this to some common module
     def __str__(self):
-        l = []
+        lst = []
         for k, v in vars(self).items():
-            l.append("%s='%s'" % (k, v))
-        return ", ".join(l)
+            lst.append("%s='%s'" % (k, v))
+        return ", ".join(lst)
 
 
 cfg = Config()
