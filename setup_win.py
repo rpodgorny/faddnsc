@@ -1,4 +1,3 @@
-import sys
 from cx_Freeze import setup, Executable
 
 from faddns.version import __version__
