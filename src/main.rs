@@ -62,15 +62,11 @@ fn main() -> anyhow::Result<()> {
     log::info!("args: {args:?}");
 
     #[cfg(target_os = "windows")]
-    let cfg_fn = Some("/faddnsc/faddnsc.ini");
+    let cfg_fn = "/faddnsc/faddnsc.ini";
     #[cfg(target_os = "linux")]
-    let cfg_fn = None;
+    let cfg_fn = "/etc/faddnsc.conf";
     log::debug!("cfg_fn: {cfg_fn:?}");
-    let cfg_ini = if let Some(cfg_fn) = cfg_fn {
-        cfg::IniConfig::from_file(cfg_fn)
-    } else {
-        cfg::IniConfig::default()
-    };
+    let cfg_ini = cfg::IniConfig::from_file(cfg_fn);
     log::debug!("cfg_ini: {cfg_ini:?}");
 
     let cfg = cfg::Config::from_ini_and_args(cfg_ini, &args);
