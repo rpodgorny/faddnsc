@@ -8,7 +8,7 @@ pub struct Args {
     #[arg(short, long)]
     pub url: Option<String>,
     /// hostname to be identified as
-    #[arg(short, long)]
+    #[arg(long)]
     pub host: Option<String>,
 }
 

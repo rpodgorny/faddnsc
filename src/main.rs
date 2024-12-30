@@ -39,6 +39,8 @@ fn log_init(fn_: Option<&str>) -> anyhow::Result<()> {
                     .open(fn_)?,
             ),
         ])?;
+    } else {
+        simplelog::CombinedLogger::init(vec![termlogger])?;
     }
 
     log_panics::init();
@@ -59,7 +61,7 @@ fn main() -> anyhow::Result<()> {
 
     log::info!("******************************");
     log::info!("starting faddnsc v{version}");
-    log::info!("args: {args:?}");
+    log::debug!("args: {args:?}");
 
     #[cfg(target_os = "windows")]
     let cfg_fn = "/faddnsc/faddnsc.ini";
