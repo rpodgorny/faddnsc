@@ -5,7 +5,7 @@ use std::time::Duration;
 const SLEEP: Duration = Duration::from_secs(600);  // TODO: hard-coded shit
 
 fn log_init(fn_: Option<&str>) -> anyhow::Result<()> {
-    let log_level_term = std::env::var("RUST_LOG").unwrap_or_else(|_| "debug".to_owned());
+    let log_level_term = std::env::var("RUST_LOG").unwrap_or_else(|_| "info".to_owned());
     let log_level_term = match log_level_term.as_str() {
         "trace" => simplelog::LevelFilter::Trace,
         "info" => simplelog::LevelFilter::Info,
