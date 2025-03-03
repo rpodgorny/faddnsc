@@ -1,3 +1,11 @@
+test *args="":
+  cargo nextest run {{args}}
+
+updeps:
+  cargo upgrade --verbose
+  cargo update --verbose
+  cargo outdated
+
 # some "classic" ways to cross-compile (fast but packaging to deb throws some errors because i'm not on debian?)
 
 deb-raspi1:
