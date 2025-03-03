@@ -2,7 +2,18 @@
 name = "faddnsc"
 version = "10.0.0"
 edition = "2021"
-rust-version = "1.77"
+rust-version = "1.74" # 1.75 in ubuntu focal, 1.77 to last support win7
+license = "PROPRIETARY"
+authors = ["Radek Podgorny <radek@podgorny.cz>"]
+
+[package.metadata.deb]
+revision = "3"  # TODO: remove on next release
+maintainer = "Radek Podgorny <radek@podgorny.cz>"
+assets = [
+  ["target/release/faddnsc", "usr/bin/", "755"],
+  ["etc/faddnsc.conf", "etc/", "644"],
+  ["etc/faddnsc.service", "usr/lib/systemd/system/", "644"],
+]
 
 [dependencies]
 anyhow = { version = "1.0.95", features = ["backtrace"] }
