@@ -93,8 +93,11 @@ fn main() -> anyhow::Result<()> {
         for (family, ip) in ips {
             url.query_pairs_mut().append_pair(family, &ip);
         }
-        let response = ureq::get(url.as_str()).call()?;
-        log::debug!("{response:?}");
+        let result = ureq::get(url.as_str()).call();
+        log::debug!("DNS update response: {result:?}");
+        if let Err(err) = &result {
+            log::error!("Failed to update DNS: {err}");
+        }
 
         std::thread::sleep(SLEEP);
 
