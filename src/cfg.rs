@@ -27,13 +27,10 @@ pub struct IniConfig {
 
 impl IniConfig {
     pub fn from_file(fn_: &str) -> Self {
-        Ini::load_from_file(fn_).map_or(
-            Self::default(),
-            |ini_| Self {
-                url: ini_.get_from(Some("General"), "Url").map(|x| x.to_owned()),
-                host: ini_.get_from(Some("General"), "Host").map(|x| x.to_owned()),
-            },
-        )
+        Ini::load_from_file(fn_).map_or(Self::default(), |ini_| Self {
+            url: ini_.get_from(Some("General"), "Url").map(|x| x.to_owned()),
+            host: ini_.get_from(Some("General"), "Host").map(|x| x.to_owned()),
+        })
     }
 }
 

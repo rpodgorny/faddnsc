@@ -2,7 +2,7 @@ mod cfg;
 
 use std::time::Duration;
 
-const SLEEP: Duration = Duration::from_secs(600);  // TODO: hard-coded shit
+const SLEEP: Duration = Duration::from_secs(600); // TODO: hard-coded shit
 
 fn log_init(fn_: Option<&str>) -> anyhow::Result<()> {
     let log_level_term = std::env::var("RUST_LOG").unwrap_or_else(|_| "info".to_owned());
@@ -77,12 +77,7 @@ fn main() -> anyhow::Result<()> {
     loop {
         let ips = local_ip_address::list_afinet_netifas()?
             .into_iter()
-            .map(|(_name, ip)| {
-                (
-                    if ip.is_ipv4() { "inet" } else { "inet6" },
-                    ip.to_string(),
-                )
-            })
+            .map(|(_name, ip)| (if ip.is_ipv4() { "inet" } else { "inet6" }, ip.to_string()))
             .collect::<Vec<_>>();
         log::debug!("{ips:?}");
 
