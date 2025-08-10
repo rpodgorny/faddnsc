@@ -19,7 +19,7 @@ impl Args {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct IniConfig {
     url: Option<String>,
     host: Option<String>,
@@ -31,15 +31,6 @@ impl IniConfig {
             url: ini_.get_from(Some("General"), "Url").map(|x| x.to_owned()),
             host: ini_.get_from(Some("General"), "Host").map(|x| x.to_owned()),
         })
-    }
-}
-
-impl Default for IniConfig {
-    fn default() -> Self {
-        Self {
-            url: None,
-            host: None,
-        }
     }
 }
 
