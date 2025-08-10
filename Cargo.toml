@@ -16,16 +16,16 @@ assets = [
 ]
 
 [dependencies]
-anyhow = { version = "1.0.95", features = ["backtrace"] }
-clap = { version = "4.5.23", features = ["derive"] }
-hostname = "0.4.0"
-local-ip-address = "0.6.3"
-log = "0.4.22"
+anyhow = { version = "1.0.98", features = ["backtrace"] }
+clap = { version = "4.5.43", features = ["derive"] }
+hostname = "0.4.1"
+local-ip-address = "0.6.5"
+log = "0.4.27"
 log-panics = { version = "2.1.0", features = ["with-backtrace"] }
-rust-ini = "0.21.1"
+rust-ini = "0.21.2"
 simplelog = "0.12.2"
-time = { version = "0.3.37", features = ["macros", "local-offset"] }
-ureq = "2.12.1"
+time = { version = "0.3.41", features = ["macros", "local-offset"] }
+ureq = "3.0.12"
 url = "2.5.4"
 
 [profile.release.package."*"]
