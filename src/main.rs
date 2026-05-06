@@ -75,18 +75,31 @@ fn main() -> anyhow::Result<()> {
     log::debug!("cfg: {cfg:?}");
 
     loop {
-        let ips = local_ip_address::list_afinet_netifas()?
-            .into_iter()
-            .map(|(_name, ip)| (if ip.is_ipv4() { "inet" } else { "inet6" }, ip.to_string()))
-            .collect::<Vec<_>>();
-        log::debug!("{ips:?}");
+        let mut entries: Vec<(&'static str, String)> = Vec::new();
+        for iface in netdev::get_interfaces() {
+            if iface.is_loopback() {
+                continue;
+            }
+            for ip in &iface.ipv4 {
+                entries.push(("inet", ip.addr().to_string()));
+            }
+            for ip in &iface.ipv6 {
+                entries.push(("inet6", ip.addr().to_string()));
+            }
+            if let Some(mac) = iface.mac_addr {
+                if mac != netdev::MacAddr::zero() {
+                    entries.push(("ether", mac.address()));
+                }
+            }
+        }
+        log::debug!("{entries:?}");
 
         let mut url = url::Url::parse(&cfg.url)?;
         url.query_pairs_mut()
             .append_pair("host", &cfg.host)
             .append_pair("version", version);
-        for (family, ip) in ips {
-            url.query_pairs_mut().append_pair(family, &ip);
+        for (family, value) in entries {
+            url.query_pairs_mut().append_pair(family, &value);
         }
         let result = ureq::get(url.as_str()).call();
         log::debug!("DNS update response: {result:?}");
