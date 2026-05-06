@@ -1,9 +1,6 @@
 mod cfg;
 
 use std::time::Duration;
-
-const SLEEP: Duration = Duration::from_secs(600); // TODO: hard-coded shit
-
 fn log_init(fn_: Option<&str>) -> anyhow::Result<()> {
     let log_level_term = std::env::var("RUST_LOG").unwrap_or_else(|_| "info".to_owned());
     let log_level_term = match log_level_term.as_str() {
@@ -125,7 +122,7 @@ fn main() -> anyhow::Result<()> {
             log::error!("Failed to update DNS: {err}");
         }
 
-        std::thread::sleep(SLEEP);
+        std::thread::sleep(Duration::from_secs(cfg.interval));
 
         // TODO: to get rid of unreachable code below
         if false {

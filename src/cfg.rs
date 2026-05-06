@@ -13,6 +13,9 @@ pub struct Args {
     /// hostname to be identified as
     #[arg(long)]
     pub host: Option<String>,
+    /// update interval in seconds
+    #[arg(short, long)]
+    pub interval: Option<u64>,
 }
 
 impl Args {
@@ -26,6 +29,7 @@ impl Args {
 pub struct IniConfig {
     url: Option<String>,
     host: Option<String>,
+    interval: Option<u64>,
 }
 
 impl IniConfig {
@@ -33,6 +37,9 @@ impl IniConfig {
         Ini::load_from_file(fn_).map_or(Self::default(), |ini_| Self {
             url: ini_.get_from(Some("General"), "Url").map(|x| x.to_owned()),
             host: ini_.get_from(Some("General"), "Host").map(|x| x.to_owned()),
+            interval: ini_
+                .get_from(Some("General"), "Interval")
+                .and_then(|x| x.parse().ok()),
         })
     }
 }
@@ -41,6 +48,7 @@ impl IniConfig {
 pub struct Config {
     pub url: String,
     pub host: String,
+    pub interval: u64,
 }
 
 impl Config {
@@ -58,6 +66,11 @@ impl Config {
         } else {
             hostname::get().unwrap().to_str().unwrap().to_string()
         };
-        Ok(Self { url, host })
+        let interval = args.interval.or(ini.interval).unwrap_or(600);
+        Ok(Self {
+            url,
+            host,
+            interval,
+        })
     }
 }
