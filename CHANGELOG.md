@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [11.1.0] - 2026-05-07
+
+### Fixed
+- Default log level no longer slips to `debug`; defaults to `info` for both terminal and file sinks.
+
 ## [11.0.0] - 2026-05-06
 
 ### Added
