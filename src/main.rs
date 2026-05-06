@@ -71,7 +71,7 @@ fn main() -> anyhow::Result<()> {
     let cfg_ini = cfg::IniConfig::from_file(cfg_fn);
     log::debug!("cfg_ini: {cfg_ini:?}");
 
-    let cfg = cfg::Config::from_ini_and_args(cfg_ini, &args);
+    let cfg = cfg::Config::from_ini_and_args(cfg_ini, &args)?;
     log::debug!("cfg: {cfg:?}");
 
     loop {

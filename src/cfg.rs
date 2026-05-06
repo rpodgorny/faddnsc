@@ -42,14 +42,12 @@ pub struct Config {
 
 impl Config {
     // TODO: if we consumed args, we wouldn't have to do all the cloning
-    pub fn from_ini_and_args(ini: IniConfig, args: &Args) -> Self {
-        let url = if let Some(url) = args.url.clone() {
-            url
-        } else if let Some(url) = ini.url {
-            url
-        } else {
-            "https://faddns.podgorny.cz".to_string()
-        };
+    pub fn from_ini_and_args(ini: IniConfig, args: &Args) -> anyhow::Result<Self> {
+        let url = args
+            .url
+            .clone()
+            .or(ini.url)
+            .ok_or_else(|| anyhow::anyhow!("no url configured"))?;
         let host = if let Some(host) = args.host.clone() {
             host
         } else if let Some(host) = ini.host {
@@ -57,6 +55,6 @@ impl Config {
         } else {
             hostname::get().unwrap().to_str().unwrap().to_string()
         };
-        Self { url, host }
+        Ok(Self { url, host })
     }
 }
