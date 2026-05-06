@@ -64,7 +64,10 @@ impl Config {
         } else if let Some(host) = ini.host {
             host
         } else {
-            hostname::get().unwrap().to_str().unwrap().to_string()
+            hostname::get()?
+                .to_str()
+                .ok_or_else(|| anyhow::anyhow!("hostname is not valid UTF-8"))?
+                .to_lowercase()
         };
         let interval = args.interval.or(ini.interval).unwrap_or(600);
         Ok(Self {
