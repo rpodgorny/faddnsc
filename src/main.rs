@@ -115,6 +115,7 @@ fn main() -> anyhow::Result<()> {
         }
         log::debug!("{entries:?}");
         let had_addresses = !entries.is_empty();
+        log::info!("sending info to {} ({entries:?})", cfg.url);
 
         let mut url = url::Url::parse(&cfg.url)?;
         url.query_pairs_mut()
