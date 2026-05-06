@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [11.0.0] - 2026-05-06
+
 ### Added
 - `--interval` CLI flag and `Interval=` ini key to configure the update interval.
 - `-c` flag to specify a config file path; also search `~/.faddnsc.conf` before the system config.
