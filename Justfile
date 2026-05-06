@@ -6,6 +6,9 @@ updeps:
   cargo update --verbose
   cargo outdated
 
+audit:
+  cargo audit
+
 # some "classic" ways to cross-compile (fast but packaging to deb throws some errors because i'm not on debian?)
 
 deb-raspi1:
@@ -20,6 +23,16 @@ deb:
 
 deb-all: deb-raspi1 deb-arm64 deb
 
+# some experiments with podman
+
+# works
+podman-deb codename="noble":
+  podman run -it --rm -v .:/x docker.io/library/ubuntu:{{codename}} /bin/sh -c "apt update; apt install -y rustup build-essential; rustup update stable; cargo install cargo-deb; cd /x; cargo deb -o target/deb/{{codename}}/"
+
+# does not work
+podman-deb-cross codename="noble":
+  podman run -it --rm -v .:/x docker.io/library/ubuntu:{{codename}} /bin/sh -c "apt update; apt install -y rustup build-essential crossbuild-essential-arm64 gcc-aarch64-linux-gnu g++-aarch64-linux-gnu libgcc-s1-arm64-cross libc6-arm64-cross libc6-dev-arm64-cross; rustup update stable; rustup target add aarch64-unknown-linux-gnu; cargo install cargo-deb; cd /x; cargo deb -o target/deb/{{codename}}/ --target=aarch64-unknown-linux-gnu"
+
 push-all-deb: deb-all
   scp target/debian/*.deb target/*-linux-*/debian/*.deb scp://deb@deb.asterix.cz:2212/debs/bookworm/
 
@@ -28,14 +41,14 @@ push-all-deb: deb-all
 build-debian codename:
   podman run -it --rm --arch=amd64 -v .:/x docker.io/library/rust:{{codename}} /bin/sh -c "cargo install cargo-deb; cd /x; cargo deb -o target/deb/{{codename}}/"
   podman run -it --rm --arch=arm64/v8 -v .:/x docker.io/library/rust:{{codename}} /bin/sh -c "cargo install cargo-deb; cd /x; cargo deb -o target/deb/{{codename}}/"
-  podman run -it --rm --arch=arm/v7 -v .:/x docker.io/library/rust:{{codename}} /bin/sh -c "cargo install cargo-deb; cd /x; cargo deb -o target/deb/{{codename}}/"
+  #podman run -it --rm --arch=arm/v7 -v .:/x docker.io/library/rust:{{codename}} /bin/sh -c "cargo install cargo-deb; cd /x; cargo deb -o target/deb/{{codename}}/"
 
-build-debian-all: (build-debian "bullseye") (build-debian "bookworm")
+build-debian-all: (build-debian "bullseye") (build-debian "bookworm") (build-debian "trixie")
 
 build-ubuntu codename:
-  podman run -it --rm --arch=amd64 -v .:/x docker.io/library/ubuntu:{{codename}} /bin/sh -c "apt update && apt install cargo -y; cargo install cargo-deb; cd /x; cargo deb -o target/deb/{{codename}}/"
+  podman run -it --rm --arch=amd64 -v .:/x docker.io/library/ubuntu:{{codename}} /bin/sh -c "apt update && apt install -y curl; curl https://sh.rustup.rs | sh -s -- -y; . ~/.cargo/env; apt install -y build-essential; cargo install cargo-deb; cd /x; cargo deb -o target/deb/{{codename}}/"
   podman run -it --rm --arch=arm64/v8 -v .:/x docker.io/library/ubuntu:{{codename}} /bin/sh -c "apt update && apt install cargo -y; cargo install cargo-deb; cd /x; cargo deb -o target/deb/{{codename}}/"
-  podman run -it --rm --arch=arm/v7 -v .:/x docker.io/library/ubuntu:{{codename}} /bin/sh -c "apt update && apt install cargo -y; cargo install cargo-deb; cd /x; cargo deb -o target/deb/{{codename}}/"
+  #podman run -it --rm --arch=arm/v7 -v .:/x docker.io/library/ubuntu:{{codename}} /bin/sh -c "apt update && apt install cargo -y; cargo install cargo-deb; cd /x; cargo deb -o target/deb/{{codename}}/"
 
 build-ubuntu-all: (build-ubuntu "focal") (build-ubuntu "jammy") (build-ubuntu "noble")
 
