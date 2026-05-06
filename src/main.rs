@@ -108,6 +108,7 @@ fn main() -> anyhow::Result<()> {
             }
         }
         log::debug!("{entries:?}");
+        let had_addresses = !entries.is_empty();
 
         let mut url = url::Url::parse(&cfg.url)?;
         url.query_pairs_mut()
@@ -122,7 +123,12 @@ fn main() -> anyhow::Result<()> {
             log::error!("Failed to update DNS: {err}");
         }
 
-        std::thread::sleep(Duration::from_secs(cfg.interval));
+        let sleep = if !had_addresses || result.is_err() {
+            Duration::from_secs(60)
+        } else {
+            Duration::from_secs(cfg.interval)
+        };
+        std::thread::sleep(sleep);
 
         // TODO: to get rid of unreachable code below
         if false {
