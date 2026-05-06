@@ -4,6 +4,9 @@ use ini::Ini;
 #[derive(Debug, Parser)]
 #[command(version = env!("CARGO_PKG_VERSION"))]
 pub struct Args {
+    /// path to config file
+    #[arg(short = 'c', long)]
+    pub config: Option<String>,
     /// base url to send data to
     #[arg(short, long)]
     pub url: Option<String>,

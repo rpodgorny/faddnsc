@@ -64,11 +64,25 @@ fn main() -> anyhow::Result<()> {
     log::debug!("args: {args:?}");
 
     #[cfg(target_os = "windows")]
-    let cfg_fn = "/faddnsc/faddnsc.ini";
+    let system_cfg_fn = "/faddnsc/faddnsc.ini";
     #[cfg(target_os = "linux")]
-    let cfg_fn = "/etc/faddnsc.conf";
+    let system_cfg_fn = "/etc/faddnsc.conf";
+    let cfg_fn: String = if let Some(c) = &args.config {
+        if !std::path::Path::new(c).is_file() {
+            anyhow::bail!("config file {c} does not exist");
+        }
+        c.clone()
+    } else {
+        let user_local = std::env::var_os("HOME")
+            .or_else(|| std::env::var_os("USERPROFILE"))
+            .map(|h| std::path::PathBuf::from(h).join(".faddnsc.conf"));
+        match user_local {
+            Some(p) if p.is_file() => p.to_string_lossy().into_owned(),
+            _ => system_cfg_fn.to_string(),
+        }
+    };
     log::debug!("cfg_fn: {cfg_fn:?}");
-    let cfg_ini = cfg::IniConfig::from_file(cfg_fn);
+    let cfg_ini = cfg::IniConfig::from_file(&cfg_fn);
     log::debug!("cfg_ini: {cfg_ini:?}");
 
     let cfg = cfg::Config::from_ini_and_args(cfg_ini, &args)?;
