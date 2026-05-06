@@ -85,6 +85,11 @@ fn main() -> anyhow::Result<()> {
     let cfg = cfg::Config::from_ini_and_args(cfg_ini, &args)?;
     log::debug!("cfg: {cfg:?}");
 
+    let agent: ureq::Agent = ureq::Agent::config_builder()
+        .timeout_global(Some(Duration::from_secs(60)))
+        .build()
+        .into();
+
     loop {
         let mut entries: Vec<(&'static str, String)> = Vec::new();
         for iface in netdev::get_interfaces() {
@@ -117,7 +122,7 @@ fn main() -> anyhow::Result<()> {
         for (family, value) in entries {
             url.query_pairs_mut().append_pair(family, &value);
         }
-        let result = ureq::get(url.as_str()).call();
+        let result = agent.get(url.as_str()).call();
         log::debug!("DNS update response: {result:?}");
         if let Err(err) = &result {
             log::error!("Failed to update DNS: {err}");
