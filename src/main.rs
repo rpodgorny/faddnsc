@@ -2,15 +2,16 @@ mod cfg;
 
 use std::time::Duration;
 fn log_init(fn_: Option<&str>) -> anyhow::Result<()> {
-    let log_level_term = std::env::var("RUST_LOG").unwrap_or_else(|_| "info".to_owned());
-    let log_level_term = match log_level_term.as_str() {
+    let log_level = std::env::var("RUST_LOG").unwrap_or_else(|_| "info".to_owned());
+    let log_level = match log_level.as_str() {
         "trace" => simplelog::LevelFilter::Trace,
-        "info" => simplelog::LevelFilter::Info,
+        "debug" => simplelog::LevelFilter::Debug,
         "warn" => simplelog::LevelFilter::Warn,
         "error" => simplelog::LevelFilter::Error,
-        _ => simplelog::LevelFilter::Debug,
+        _ => simplelog::LevelFilter::Info,
     };
-    let log_level_file = simplelog::LevelFilter::Debug;
+    let log_level_term = log_level;
+    let log_level_file = log_level;
     let log_config = simplelog::ConfigBuilder::new()
         .set_time_format_custom(time::macros::format_description!(
             "[year]-[month]-[day] [hour]:[minute]:[second].[subsecond digits:6]"
