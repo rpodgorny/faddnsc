@@ -7,7 +7,6 @@ license = "PROPRIETARY"
 authors = ["Radek Podgorny <radek@podgorny.cz>"]
 
 [package.metadata.deb]
-revision = "3"  # TODO: remove on next release
 maintainer = "Radek Podgorny <radek@podgorny.cz>"
 assets = [
   ["target/release/faddnsc", "usr/bin/", "755"],
