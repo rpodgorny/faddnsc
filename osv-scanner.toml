@@ -1,0 +1,13 @@
+# =====================================================================
+# TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
+# REMOVE THIS EXCEPTION ONCE rust-netlink/netlink-packet-core ISSUE #41
+# IS RESOLVED AND netlink-packet-core SHIPS A RELEASE WITHOUT `paste`.
+# Upstream tracker: https://github.com/rust-netlink/netlink-packet-core/issues/41
+# `ignoreUntil` is set short on purpose so this re-fails CI and nags us.
+# TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
+# =====================================================================
+
+[[IgnoredVulns]]
+id = "RUSTSEC-2024-0436"
+ignoreUntil = 2026-06-06
+reason = "`paste` crate marked unmaintained; pulled in transitively via netdev -> netlink-packet-core. No fixed version exists. Tracking upstream issue #41."
