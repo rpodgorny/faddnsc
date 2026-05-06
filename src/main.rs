@@ -83,7 +83,11 @@ fn main() -> anyhow::Result<()> {
             for ip in &iface.ipv4 {
                 entries.push(("inet", ip.addr().to_string()));
             }
-            for ip in &iface.ipv6 {
+            for (i, ip) in iface.ipv6.iter().enumerate() {
+                let flags = iface.ipv6_addr_flags.get(i).copied().unwrap_or_default();
+                if flags.temporary || flags.deprecated || flags.tentative || flags.duplicated {
+                    continue;
+                }
                 entries.push(("inet6", ip.addr().to_string()));
             }
             if let Some(mac) = iface.mac_addr {
