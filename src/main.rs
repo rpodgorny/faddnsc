@@ -1,6 +1,27 @@
 mod cfg;
 
 use std::time::Duration;
+
+fn ipv4_is_public(addr: &std::net::Ipv4Addr) -> bool {
+    !(addr.is_private()
+        || addr.is_loopback()
+        || addr.is_link_local()
+        || addr.is_unspecified()
+        || addr.is_broadcast()
+        || addr.is_documentation())
+}
+
+fn ipv6_is_public(addr: &std::net::Ipv6Addr) -> bool {
+    let segs = addr.segments();
+    let is_unique_local = (segs[0] & 0xfe00) == 0xfc00;
+    let is_link_local = (segs[0] & 0xffc0) == 0xfe80;
+    !(addr.is_loopback()
+        || addr.is_unspecified()
+        || addr.is_multicast()
+        || is_unique_local
+        || is_link_local)
+}
+
 fn log_init(fn_: Option<&str>) -> anyhow::Result<()> {
     let log_level = std::env::var("RUST_LOG").unwrap_or_else(|_| "info".to_owned());
     let log_level = match log_level.as_str() {
@@ -114,7 +135,21 @@ fn main() -> anyhow::Result<()> {
             }
         }
         log::debug!("{entries:?}");
-        let had_addresses = !entries.is_empty();
+        let has_ip_address = entries
+            .iter()
+            .any(|(family, _)| matches!(*family, "inet" | "inet6"));
+        let has_public_ip_address = entries.iter().any(|(family, value)| match *family {
+            "inet" => value
+                .parse::<std::net::Ipv4Addr>()
+                .is_ok_and(|a| ipv4_is_public(&a)),
+            "inet6" => value
+                .parse::<std::net::Ipv6Addr>()
+                .is_ok_and(|a| ipv6_is_public(&a)),
+            _ => false,
+        });
+        log::debug!(
+            "has_ip_address={has_ip_address} has_public_ip_address={has_public_ip_address}"
+        );
         log::info!("sending info to {} ({entries:?})", cfg.url);
 
         let mut url = url::Url::parse(&cfg.url)?;
@@ -130,7 +165,7 @@ fn main() -> anyhow::Result<()> {
             log::error!("Failed to update DNS: {err}");
         }
 
-        let sleep = if !had_addresses || result.is_err() {
+        let sleep = if !has_public_ip_address || result.is_err() {
             Duration::from_secs(60)
         } else {
             Duration::from_secs(cfg.interval)
