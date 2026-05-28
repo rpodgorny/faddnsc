@@ -10,7 +10,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
-- Fast-retry interval (60s) is now used whenever no publicly-routable IP address is present, not only when no addresses are collected at all. Cuts post-boot DNS publish latency from up to `cfg.interval` (default 600s) to ~60s.
 
 ### Deprecated
 
@@ -19,6 +18,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 ### Security
+
+## [11.3.0] - 2026-05-28
+
+### Changed
+- Fast-retry interval (60s) is now used whenever no publicly-routable IP address is present, not only when no addresses are collected at all. Cuts post-boot DNS publish latency from up to `cfg.interval` (default 600s) to ~60s.
 
 ## [11.2.0] - 2026-05-07
 
